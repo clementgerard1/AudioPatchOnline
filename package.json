@@ -8,7 +8,16 @@
     "@babel/core": "^7.11.6",
     "@babel/plugin-proposal-private-methods": "^7.10.4",
     "@babel/preset-env": "^7.11.5",
+    "babel-jest": "^26.3.0",
     "babel-loader": "^8.1.0",
+    "css-loader": "^4.3.0",
+    "jest": "^26.4.2",
+    "jest-html-reporter": "^3.2.0",
+    "jsdoc": "^3.6.6",
+    "sass": "^1.26.11",
+    "sass-loader": "^10.0.2",
+    "style-loader": "^1.2.1",
+    "vue": "^2.6.12",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
@@ -17,8 +26,8 @@
     "dev": "webpack-dev-server --open --config ./webpack.dev.js",
     "build": "cp -r public/* dist; webpack --config ./webpack.prod.js",
     "commit": "git add --all ; git commit -m",
-    "test": "test",
-    "doc": "doc"
+    "test": "jest src/api/tests --watch",
+    "doc": "rm -rf ./src/api/doc; ./node_modules/.bin/jsdoc -r ./src/api -d ./src/api/doc"
   },
   "repository": {
     "type": "git",

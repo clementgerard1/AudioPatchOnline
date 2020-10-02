@@ -1,0 +1,57 @@
+.box{
+	position : absolute;
+	top : 0px;
+	padding: 5px 10px;
+	border-radius : 5px;
+	border : 1px solid black;
+
+	.boxOutlets, .boxInlets{
+		position : relative;
+		display : flex;
+
+		height: 0px;
+    overflow: visible;
+
+
+		p{
+	    text-align: center;
+	    flex: 1;
+
+	    span{
+	    	width : 10px;
+	    	height : 10px;
+	    	border-radius: 5px;
+	    	display: inline-block;
+	    	border : 1px solid black;
+	    	background-color : white;
+	    }
+
+		}
+
+	}
+
+	.boxOutlets{
+	    top: -3px;
+	}
+
+	.boxInlets{
+	    top: -13px;
+	}
+
+}
+
+.inputBox{
+	background-color: #001AFF;
+	color : white;
+}
+
+.processBox{
+	background-color : white;
+	color : black
+}
+
+
+.outputBox{
+	background-color: #CE600F;
+	color : white;
+}
