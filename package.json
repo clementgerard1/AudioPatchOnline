@@ -1,0 +1,33 @@
+{
+  "name": "audiopatchonline",
+  "version": "0.0.1",
+  "description": "Audio Patch Online project",
+  "main": "dist/index.html",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/plugin-proposal-private-methods": "^7.10.4",
+    "@babel/preset-env": "^7.11.5",
+    "babel-loader": "^8.1.0",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "scripts": {
+    "dev": "webpack-dev-server --open --config ./webpack.dev.js",
+    "build": "cp -r public/* dist; webpack --config ./webpack.prod.js",
+    "commit": "git add --all ; git commit -m",
+    "test": "test",
+    "doc": "doc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clementgerard1/AudioPatchOnline.git"
+  },
+  "author": "Clément Gérard",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/clementgerard1/AudioPatchOnline/issues"
+  },
+  "homepage": "https://github.com/clementgerard1/AudioPatchOnline#readme"
+}
