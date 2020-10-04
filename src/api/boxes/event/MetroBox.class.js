@@ -7,11 +7,12 @@ class MetroBox extends EventInputBox{
 	#previousTriggerDate;
 
 	constructor(){
+		
 		super();
 
 		this.setName("metro");
 
-		this.#time = 100; //ms
+		this.#time = 1000; //ms
 		this.#previousTriggerDate = null;
 
 		const output = new OutputConnectable(this);

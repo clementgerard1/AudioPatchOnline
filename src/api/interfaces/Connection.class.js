@@ -8,6 +8,8 @@ class Connection{
 	#inputConnectable;
 	#outputConnectable;
 
+	#processCallbacks;
+
 	/**
 		@class Connection
 		@classdesc Connection represents a connection between two connectables
@@ -29,6 +31,8 @@ class Connection{
 		this.#inputConnectable.getBox().addOutputConnection(this);
 		this.#outputConnectable.getBox().addInputConnection(this);
 
+		this.#processCallbacks = [];
+
 	}
 
 	/**
@@ -42,7 +46,11 @@ class Connection{
 	/**
 		Process transfert of data
 	*/
-	process(){}
+	process(){
+		for(let p in this.#processCallbacks){
+			this.#processCallbacks[p]();
+		}
+	}
 
 	/**
 		Get Input Connectable
@@ -75,6 +83,24 @@ class Connection{
 	*/
 	getType(){
 		return this.#type;
+	}
+
+	/**
+		Add a callback call during process
+		@param {function} callback
+	*/
+	addProcessCallback(callback){
+		this.#processCallbacks.push(callback);
+	}
+
+	/**
+		Remove a process callback
+		@param {function} callback
+	*/
+	removeProcessCallback(callback){
+		for(let p in this.#processCallbacks){
+			if(this.#processCallbacks[p].toString() == callback.toString()) this.#processCallbacks.splice(p, 1);
+		}
 	}
 
 }

@@ -31,6 +31,23 @@ class EventConnection extends Connection{
 	process(){
 		this.getOutputConnectable().setValue(this.getInputConnectable().getValue());
 		if(this.#hot) this.getOutputConnectable().getBox().process();
+		super.process();
+	}
+
+	/**
+		Return hot connection state
+		@returns {boolean}
+	*/
+	isHot(){
+		return this.#hot;
+	}
+
+	/**
+		Set hot connection state
+		@param {boolean} bool
+	*/
+	setHot(bool){
+		this.#hot = bool;
 	}
 
 }

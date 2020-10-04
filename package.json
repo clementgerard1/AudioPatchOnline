@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "Audio Patch Online project",
   "main": "dist/index.html",
-  "dependencies": {},
+  "dependencies": {
+    "hammerjs": "^2.0.8"
+  },
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@babel/plugin-proposal-private-methods": "^7.10.4",
@@ -17,6 +19,7 @@
     "sass": "^1.26.11",
     "sass-loader": "^10.0.2",
     "style-loader": "^1.2.1",
+    "svg-inline-loader": "^0.8.2",
     "vue": "^2.6.12",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",

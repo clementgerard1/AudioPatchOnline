@@ -1,5 +1,9 @@
 import "./index.scss";
 import Vue from "vue/dist/vue.esm.js";
+import Hammer from "hammerjs";
+
+import GeneralUtils from "./utils/GeneralUtils.js";
+import InteractUtils from "./utils/InteractUtils.js";
 
 import Box from "./components/Box.vue";
 import Connection from "./components/Connection.vue";
@@ -14,6 +18,74 @@ import EventConnection from "../api/interfaces/EventConnection.class.js";
 import SoundConnection from "../api/interfaces/SoundConnection.class.js";
 
 import AudioManager from "../api/AudioManager.class.js";
+
+import SvgDefintions from "./utils/SvgDefinitions.svg";
+
+Vue.directive("tap", {
+	bind: function(el, binding) 
+	{
+		if(el.getAttribute("hammerid") == null){
+			el.setAttribute("hammerid", GeneralUtils.getId("hammer"));
+		}
+		if (typeof binding.value === "function") {
+			let hammer = InteractUtils.getHammer(el);
+			if(hammer == null){
+				hammer = new Hammer(el);
+				InteractUtils.addHammer(el, hammer);
+			} 
+
+			hammer.on("tap", binding.value);
+		}
+	},
+	unbind: function(el, binding){
+		InteractUtils.destroy(el);
+	}
+});
+Vue.directive("doubletap", {
+	bind: function(el, binding) 
+	{
+		if(el.getAttribute("hammerid") == null){
+			el.setAttribute("hammerid", GeneralUtils.getId("hammer"));
+		}
+		if (typeof binding.value === "function") {
+			let hammer = InteractUtils.getHammer(el);
+			if(hammer == null){
+				hammer = new Hammer(el);
+				InteractUtils.addHammer(el, hammer);
+			} 
+
+			hammer.on("doubletap", binding.value);
+		}
+	},
+	unbind: function(el, binding){
+		InteractUtils.destroy(el);
+	}
+});
+Vue.directive("pan", {
+	bind: function(el, binding) 
+	{
+		if(el.getAttribute("hammerid") == null){
+			el.setAttribute("hammerid", GeneralUtils.getId("hammer"));
+		}
+		if (typeof binding.value === "function") {
+			let hammer = InteractUtils.getHammer(el);
+			if(hammer == null){
+				hammer = new Hammer(el);
+				InteractUtils.addHammer(el, hammer);
+			} 
+
+			hammer.get('pan').set({threshold : 1,  direction: Hammer.DIRECTION_ALL });
+			hammer.on("panstart", binding.value);
+			hammer.on("panmove", binding.value);
+			hammer.on("panend", binding.value);
+			hammer.on("panup", binding.value);
+			hammer.on("pandown", binding.value);
+		}
+	},
+	unbind: function(el, binding){
+		InteractUtils.destroy(el);
+	}
+});
 
 const app = new Vue({
 	el : '#content',
@@ -102,7 +174,8 @@ const app = new Vue({
 	},
 	template : `
 		<div>
-			<img v-on:click="soundOnOff" v-bind:src='[isSoundOn ? "/icons/soundOn.svg" : "/icons/soundOff.svg"]'/>
+			` + SvgDefintions + `
+			<img v-tap="soundOnOff" v-bind:src='[isSoundOn ? "/icons/soundOn.svg" : "/icons/soundOff.svg"]'/>
 	 		<box v-for="box in boxes" v-bind:box="box.box" v-bind:x="box.x" v-bind:y="box.y"></box>
 	 		<connection v-for="connection in connections" v-bind:connection="connection"></connection>
 	 	</div>
