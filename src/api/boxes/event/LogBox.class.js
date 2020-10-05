@@ -18,7 +18,7 @@ class LogBox extends EventOutputBox{
 	}
 
 	process(){
-		console.log(this.#logName, this.getId(), this.getInputConnectable(0).getValue());
+		console.log(this.#logName, this.getInputConnectable(0).getValue());
 	}
 
 }

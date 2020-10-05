@@ -80,7 +80,6 @@ export default {
 			this.updateHot = !this.updateHot;
 		},
 		changeOrder : function(){
-			console.log("vlan");
 			if(Object.keys(this.connection.getInputConnectable().getBox().getOutputConnections()).length > 1){
 				if(this.orderChangeProcessing && this._order != "?"){
 					return;
@@ -147,7 +146,7 @@ export default {
 	},
 	template : `
 	<svg class="connection">
-		<path v-doubletap="hotChange" v-bind:d="'M ' + start.x + ' ' + start.y + ' L ' + end.x + ' ' + end.y + ' ' + (end.x + width) + ' ' + end.y + ' ' + (start.x + width) + ' ' + start.y + ' Z'" v-bind:fill="color" v-bind:stroke="hotColor" stroke-width="2"/>
+		<path v-doubletap="hotChange" v-tap="changeOrder" v-bind:d="'M ' + start.x + ' ' + start.y + ' L ' + end.x + ' ' + end.y + ' ' + (end.x + width) + ' ' + end.y + ' ' + (start.x + width) + ' ' + start.y + ' Z'" v-bind:fill="color" v-bind:stroke="hotColor" stroke-width="2"/>
 		<circle v-doubletap="hotChange" v-tap="changeOrder" v-bind:cx="(end.x + start.x) / 2" v-bind:cy="(end.y + start.y) / 2" r="7" stroke="black" stroke-width="1" fill="white" />
 		<text v-doubletap="hotChange" v-tap="changeOrder" class="small" v-bind:x="(end.x + start.x) / 2 - 4" v-bind:y="(end.y + start.y) / 2 + 4" v-html="_order"></text>
 	</svg>`,
