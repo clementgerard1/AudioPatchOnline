@@ -30,11 +30,16 @@ Vue.directive("tap", {
 		if (typeof binding.value === "function") {
 			let hammer = InteractUtils.getHammer(el);
 			if(hammer == null){
-				hammer = new Hammer(el);
+				hammer = new Hammer.Manager(el);
 				InteractUtils.addHammer(el, hammer);
 			} 
 
-			hammer.on("tap", binding.value);
+			const singleTap = new Hammer.Tap({event: 'singletap'});
+			hammer.add(singleTap);
+
+			hammer.on("singletap", binding.value);
+
+			InteractUtils.updateHammer(el);
 		}
 	},
 	unbind: function(el, binding){
@@ -50,11 +55,16 @@ Vue.directive("doubletap", {
 		if (typeof binding.value === "function") {
 			let hammer = InteractUtils.getHammer(el);
 			if(hammer == null){
-				hammer = new Hammer(el);
+				hammer = new Hammer.Manager(el);
 				InteractUtils.addHammer(el, hammer);
 			} 
 
+			const doubleTap = new Hammer.Tap({event: 'doubletap', taps: 2 });
+			hammer.add(doubleTap);
+
 			hammer.on("doubletap", binding.value);
+
+			InteractUtils.updateHammer(el);
 		}
 	},
 	unbind: function(el, binding){
@@ -70,16 +80,20 @@ Vue.directive("pan", {
 		if (typeof binding.value === "function") {
 			let hammer = InteractUtils.getHammer(el);
 			if(hammer == null){
-				hammer = new Hammer(el);
+				hammer = new Hammer.Manager(el);
 				InteractUtils.addHammer(el, hammer);
 			} 
 
-			hammer.get('pan').set({threshold : 1,  direction: Hammer.DIRECTION_ALL });
+			const pan = new Hammer.Pan({event: 'pan', threshold : 1,  direction: Hammer.DIRECTION_ALL});
+			hammer.add(pan);
+
 			hammer.on("panstart", binding.value);
 			hammer.on("panmove", binding.value);
 			hammer.on("panend", binding.value);
 			hammer.on("panup", binding.value);
 			hammer.on("pandown", binding.value);
+
+			InteractUtils.updateHammer(el);
 		}
 	},
 	unbind: function(el, binding){
@@ -130,6 +144,15 @@ const app = new Vue({
 				y : 250,
 			});
 			this.connections.push(connection2);
+
+			const log2 = new LogBox();
+			const connection5 = new EventConnection(random.getOutputConnectable(0), log2.getInputConnectable(0));
+			this.boxes.push({
+				box : log2,
+				x : 300,
+				y : 250,
+			});
+			this.connections.push(connection5);
 
 			const cycle = new CycleSoundBox();
 			const connection3 = new EventConnection(random.getOutputConnectable(0), cycle.getInputConnectable(0));

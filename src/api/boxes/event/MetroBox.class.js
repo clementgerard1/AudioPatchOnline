@@ -30,8 +30,9 @@ class MetroBox extends EventInputBox{
 
 	outputProcess(){
 		const outputs = this.getOutputConnections();
-		for(let o in outputs){
-			outputs[o].process();
+		const outputOrders = this.getOutputConnectionOrders();
+		for(let o in outputOrders){
+			outputs[outputOrders[o]].process();
 		}
 	}
 

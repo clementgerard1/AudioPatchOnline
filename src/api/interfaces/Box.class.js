@@ -12,6 +12,7 @@ class Box{
 	#connectables;
 	#inputConnectables;
 	#outputConnectables;
+	#outputConnectionsProcessingOrder;
 
 	#type;
 	#graphType;
@@ -33,6 +34,7 @@ class Box{
 
 		this.#inputConnections = {};
 		this.#outputConnections = {};
+		this.#outputConnectionsProcessingOrder = [];
 		this.#connectables = {};
 		this.#inputConnectables = [];
 		this.#outputConnectables = [];
@@ -94,6 +96,7 @@ class Box{
 	addOutputConnection(connection){
 		if(connection instanceof Connection && typeof this.#outputConnections[connection.getId()] == "undefined"){
 			this.#outputConnections[connection.getId()] = connection; 
+			this.#outputConnectionsProcessingOrder.push(connection.getId());
 			return true;
 		}else{
 			return false;
@@ -112,6 +115,14 @@ class Box{
 		}else{
 			return false;
 		}
+	}
+
+	/**
+		Get a list of all output connections
+		@returns {Array}
+	*/
+	getOutputConnections(){
+		return this.#outputConnections;
 	}
 
 	/**
@@ -247,6 +258,31 @@ class Box{
 	*/
 	getName(){
 		return this.#name;
+	}
+
+	/**
+		Get the order of a connexion during processing
+		@return {int}
+	*/
+	getOutputConnectionOrder(connectId){
+		return this.#outputConnectionsProcessingOrder.indexOf(connectId);
+	}
+
+	/**
+		Get the output order connection array
+		@return {array}
+	*/
+	getOutputConnectionOrders(){
+		return this.#outputConnectionsProcessingOrder;
+	}
+
+	/**
+		Set the order of a connection
+		@param {int} connectId
+		@param {int} order
+	*/
+	setOrder(connectId, order){
+		this.#outputConnectionsProcessingOrder[order] = connectId;
 	}
 
 }

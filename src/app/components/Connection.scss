@@ -5,7 +5,11 @@
 	overflow: visible;
 	pointer-events : none;
 
-	path{
+	path, text, circle{
 		pointer-events : initial;
+	}
+
+	text.small{
+		font: italic 13px sans-serif;
 	}
 }
