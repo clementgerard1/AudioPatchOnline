@@ -16,7 +16,7 @@ class OutputSoundBox extends SoundOutputBox{
 		this.addConnectable(input, "input0");
 		this.#dac = AudioManager.getDestination();
 		input.setValue(this.#dac);
-		this.setInputConnectable(0, input);
+		this.setInputConnectable(0, "input0");
 
 	}
 

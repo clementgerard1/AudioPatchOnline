@@ -1,9 +1,9 @@
-import EventToSoundBox from "../../interfaces/EventToSoundBox.class.js";
-import InputConnectable from "../../interfaces/InputConnectable.class.js";
+import SoundInputBox from "../../interfaces/SoundInputBox.class.js";
 import OutputConnectable from "../../interfaces/OutputConnectable.class.js";
 import AudioManager from "../../AudioManager.class.js";
+import ParamConnectable from "../../interfaces/ParamConnectable.class.js";
 
-class CycleSoundBox extends EventToSoundBox{
+class CycleSoundBox extends SoundInputBox{
 
 	#osc;
 
@@ -12,21 +12,22 @@ class CycleSoundBox extends EventToSoundBox{
 
 		this.setName("cycle~");
 
-		const input = new InputConnectable(this);
-		this.addConnectable(input, "input0");
-		this.setInputConnectable(0, input);
-
 		const output = new OutputConnectable(this);
 		this.#osc = AudioManager.getAudioContext().createOscillator();
 		this.#osc.start();
 		output.setValue(this.#osc);
 		this.addConnectable(output, "output0");
-		this.setOutputConnectable(0, output);
+		this.setOutputConnectable(0, "output0");
+
+		const frequency = new ParamConnectable(this);
+		frequency.setValue(440);
+		this.addConnectable(frequency, "frequency");
+		this.setParamConnectable("frequency");
 
 	}
 
 	process(){
-		this.#osc.frequency.setValueAtTime(this.getInputConnectable(0).getValue(), AudioManager.getAudioContext().currentTime);
+		this.#osc.frequency.setValueAtTime(parseInt(this.getConnectableByName("frequency").getValue()), AudioManager.getAudioContext().currentTime);
 	}
 
 }

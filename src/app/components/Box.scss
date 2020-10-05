@@ -4,6 +4,20 @@
 	padding: 5px 10px;
 	border-radius : 5px;
 	border : 1px solid black;
+	margin-right : 15px;
+
+	.boxMain{
+		span{
+			width : calc(100% - 31px);
+			display: inline-block;
+		}
+		img{
+			text-align:right;
+			margin-left : 15px;
+			width : 15px;
+			background-color : white;
+		}
+	}
 
 	.boxOutlets, .boxInlets{
 		position : relative;
@@ -36,6 +50,33 @@
 
 	.boxInlets{
 	    top: -13px;
+	}
+
+	.param{
+		border-bottom : 1px solid black;
+		position :relative;
+		p{
+	    text-align: center;
+	    flex: 1;
+
+	    textarea{
+	    	height : 15px;
+	    	width :60px;
+	    }
+		}
+
+		.paramInlet{
+			position: absolute;
+	    left: -16px;
+	    top: 3px;
+    	width : 10px;
+    	height : 10px;
+    	border-radius: 5px;
+    	display: inline-block;
+    	border : 1px solid black;
+    	background-color : white;
+    }
+
 	}
 
 }

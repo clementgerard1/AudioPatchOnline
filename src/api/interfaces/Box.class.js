@@ -12,6 +12,7 @@ class Box{
 	#connectables;
 	#inputConnectables;
 	#outputConnectables;
+	#paramConnectables;
 	#outputConnectionsProcessingOrder;
 
 	#type;
@@ -21,11 +22,11 @@ class Box{
 		@class Box
 		@classdesc Box represents a processing node of patch graph
 		@constructs
-		@param {string} type Type of box (event, sound, mixte)
+		@param {string} type Type of box (event, sound, eventToSound, soundToEvent)
 		@param {number} [id=generated]
 	*/
 	constructor(type, id = GeneralUtils.getId("box")){
-		
+
 		//id sound be a number
 		if(typeof id != "number") id = GeneralUtils.getId("box");
 		this.#id = id;
@@ -38,6 +39,7 @@ class Box{
 		this.#connectables = {};
 		this.#inputConnectables = [];
 		this.#outputConnectables = [];
+		this.#paramConnectables = {};
 
 		this.#type = type;
 		this.#graphType = null;
@@ -59,6 +61,13 @@ class Box{
 		@abstract
 	*/
 	process(args){}
+
+	/**
+		Force processing of the box
+	*/
+	forceProcess(args){
+		this.process(args);
+	}
 
 	/**
 		Add new input connection 
@@ -111,6 +120,7 @@ class Box{
 	removeOutputConnection(connection){
 		if(connection instanceof Connection && typeof this.#outputConnections[connection.getId()] != "undefined"){
 			delete this.#outputConnections[connection.getId()]; 
+			this.#outputConnectionsProcessingOrder.splice(this.#outputConnectionsProcessingOrder.indexOf(connection.getId()), 1);
 			return true;
 		}else{
 			return false;
@@ -145,6 +155,15 @@ class Box{
 	}
 
 	/**
+		Get a connectable by its name
+		@param {string} name
+		@return {Connectable}
+	*/
+	getConnectableByName(name){
+		return this.#connectables[name];
+	}
+
+	/**
 		Remove connectable
 		@param {Connectable} connectable
 		@returns {bool} reprents success of operation
@@ -159,20 +178,13 @@ class Box{
 	}
 
 	/**
-		Get outputs Connections
-		@returns {array} array of Connections
-	*/
-	getOutputConnections(){
-		return this.#outputConnections;
-	}
-
-	/**
 		Set input box connectable
 		@param {int} i
 		@param {Connectable} connectable
 		@return {bool} 
 	*/
-	setInputConnectable(i, connectable){
+	setInputConnectable(i, connectableName){
+		const connectable = this.getConnectableByName(connectableName);
 		if(!(connectable instanceof Connectable)) return false;
 		this.#inputConnectables[i] = connectable;
 		return true;
@@ -184,10 +196,32 @@ class Box{
 		@param {Connectable} connectable
 		@return {bool} 
 	*/
-	setOutputConnectable(i, connectable){
+	setOutputConnectable(i, connectableName){
+		const connectable = this.getConnectableByName(connectableName);
 		if(!(connectable instanceof Connectable)) return false;
 		this.#outputConnectables[i] = connectable;
 		return true;
+	}
+
+	/**
+		Set output box connectable
+		@param {int} i
+		@param {Connectable} connectable
+		@return {bool} 
+	*/
+	setParamConnectable(connectableName){
+		const connectable = this.getConnectableByName(connectableName);
+		if(!(connectable instanceof Connectable)) return false;
+		this.#paramConnectables[connectableName] = connectable;
+		return true;
+	}
+
+	/**
+		Get all param connectables
+		@returns {array}
+	*/
+	getParamConnectables(){
+		return this.#paramConnectables;
 	}
 
 	/**
@@ -233,6 +267,14 @@ class Box{
 	*/
 	setGraphType(type){
 		this.#graphType = type;
+	}
+
+	/**
+		Get the type of box (event, sound)
+		@returns {string}
+	*/
+	getType(){
+		return this.#type;
 	}
 
 	/**

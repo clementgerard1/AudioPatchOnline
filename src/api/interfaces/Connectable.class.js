@@ -7,6 +7,8 @@ class Connectable{
 
 	#value; // Value used by connection processing
 
+	#callbacks // Callback called after process
+
 	/**
 		@class Connectable
 		@classdesc Connectable represents a part of box which can be connected
@@ -23,6 +25,7 @@ class Connectable{
 		this.#id = id;
 
 		this.#value = null;
+		this.#callbacks = [];
 
 	}
 
@@ -49,6 +52,9 @@ class Connectable{
 	*/
 	setValue(value){
 		this.#value = value;
+		for(let c in this.#callbacks){
+			this.#callbacks[c]();
+		}
 		return true;
 	}
 
@@ -58,6 +64,14 @@ class Connectable{
 	*/
 	getBox(){
 		return this.#box;
+	}
+
+	/**
+		Add process listener callback
+		@param {function} callback
+	*/
+	addListener(callback){
+		this.#callbacks.push(callback);
 	}
 
 }

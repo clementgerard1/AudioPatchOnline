@@ -7,14 +7,17 @@ import InteractUtils from "./utils/InteractUtils.js";
 
 import Box from "./components/Box.vue";
 import Connection from "./components/Connection.vue";
+import TemporaryConnection from "./components/TemporaryConnection.vue";
 
 import Patch from "../api/Patch.class.js";
 import EventInputBox from "../api/interfaces/EventInputBox.class.js";
 import SoundInputBox from "../api/interfaces/EventInputBox.class.js";
 import EventConnection from "../api/interfaces/EventConnection.class.js";
 import SoundConnection from "../api/interfaces/SoundConnection.class.js";
+import ParamConectable from "../api/interfaces/ParamConnectable.class.js";
 
 import AudioManager from "../api/AudioManager.class.js";
+
 
 import BoxDef from "./utils/BoxDefinitions.js";
 import SvgDefintions from "./utils/SvgDefinitions.svg";
@@ -29,6 +32,7 @@ Vue.directive("tap", {
 			let hammer = InteractUtils.getHammer(el);
 			if(hammer == null){
 				hammer = new Hammer.Manager(el);
+				hammer.domEvents=true;
 				InteractUtils.addHammer(el, hammer);
 			} 
 
@@ -54,6 +58,7 @@ Vue.directive("doubletap", {
 			let hammer = InteractUtils.getHammer(el);
 			if(hammer == null){
 				hammer = new Hammer.Manager(el);
+				hammer.domEvents=true;
 				InteractUtils.addHammer(el, hammer);
 			} 
 
@@ -79,6 +84,7 @@ Vue.directive("pan", {
 			let hammer = InteractUtils.getHammer(el);
 			if(hammer == null){
 				hammer = new Hammer.Manager(el);
+				hammer.domEvents=true;
 				InteractUtils.addHammer(el, hammer);
 			} 
 
@@ -103,7 +109,8 @@ const app = new Vue({
 	el : '#content',
 	components : {
 		box : Box,
-		connection : Connection
+		connection : Connection,
+		temporaryConnection : TemporaryConnection,
 	},
 	data: function(){
 		return {
@@ -112,9 +119,102 @@ const app = new Vue({
 			boxes : [],
 			connections : [],
 			patch : new Patch(),
+			keyRdown : false,
+
+			//connection creation
+			temporaryConnectionObj : null,
+
+			pointerPosition : {
+				x : 0,
+				y : 0
+			}
 		}
 	},
 	mounted : function(){
+
+		//Connection creation event
+		document.body.addEventListener("connection-creation", (event)=>{
+			if(this.temporaryConnectionObj == null){
+				if(event.detail.type == "input"){
+					this.temporaryConnectionObj = {
+						input : event.detail.connectable,
+						output : null
+					};
+				}else if(event.detail.type == "output"){
+					this.temporaryConnectionObj = {
+						input : null,
+						output : event.detail.connectable
+					};
+				}
+			}else{
+				if((event.detail.type == "input" && this.temporaryConnectionObj.input != null) || (event.detail.type == "output" && this.temporaryConnectionObj.output != null)) return;
+				if(event.detail.type == "input"){
+					this.temporaryConnectionObj.input = event.detail.connectable;
+				}else if(event.detail.type == "output"){
+					this.temporaryConnectionObj.output = event.detail.connectable;
+				}
+				if(!this.connectionExist(this.temporaryConnectionObj.output, this.temporaryConnectionObj.input)){
+					if((this.temporaryConnectionObj.output.getBox().getType() == "event" || this.temporaryConnectionObj.output.getBox().getType() == "soundToEvent") && (this.temporaryConnectionObj.input instanceof ParamConectable  || this.temporaryConnectionObj.input.getBox().getType() == "event"  || this.temporaryConnectionObj.input.getBox().getType() == "eventToSound")){
+						const connection = new EventConnection(this.temporaryConnectionObj.output, this.temporaryConnectionObj.input);
+						this.connections.push(connection);
+					}else if((this.temporaryConnectionObj.output.getBox().getType() == "sound" || this.temporaryConnectionObj.output.getBox().getType() == "eventToSound") && (this.temporaryConnectionObj.input.getBox().getType() == "sound" || this.temporaryConnectionObj.input.getBox().getType() == "soundToEvent")){
+						const connection = new SoundConnection(this.temporaryConnectionObj.output, this.temporaryConnectionObj.input);
+						this.connections.push(connection);
+					}
+				}
+				this.temporaryConnectionObj = null;
+			}
+		});
+
+		//Box remove event
+		document.body.addEventListener("box-remove", (event)=>{
+			const box = event.detail;
+
+			for(let c = 0 ; c < this.connections.length ; c++){
+				if(this.connections[c].getInputConnectable().getBox().getId() == box.getId() || this.connections[c].getOutputConnectable().getBox().getId() == box.getId()){
+					this.connections[c].destroyLinks();
+					this.connections.splice(c, 1);
+					c--;
+				}
+			}
+			for(let b = 0 ; b < this.boxes.length ; b++){
+				if(this.boxes[b].box.getId() == box.getId()){
+					this.boxes.splice(b, 1);
+					b--;
+				}
+			}
+
+			if(box instanceof EventInputBox || box instanceof SoundInputBox){
+				this.patch.removeInput(box);
+			}
+
+		});
+
+		//Connection remove event
+		document.body.addEventListener("connection-remove", (event)=>{
+			const connection = event.detail;
+
+			for(let c = 0 ; c < this.connections.length ; c++){
+				if(this.connections[c].getId() == connection.getId()){
+					this.connections[c].destroyLinks();
+					this.connections.splice(c, 1);
+					c--;
+				}
+			}
+
+		});
+
+
+
+		//key detector for remove objects
+		document.addEventListener('keydown', (e) => {
+		  if(e.key == "r") this.keyRdown = true;
+		});
+		document.addEventListener('keyup', (e) => {
+			if(e.key == "r") this.keyRdown = false;
+		});
+
+
 		//Render loop
 		const loop = () => {
 			this.patch.process();
@@ -126,66 +226,15 @@ const app = new Vue({
 
 	},
 	methods : {
-		initDemo : function(){
-
-			const metro = new BoxDef.MetroBox();
-			this.patch.addInput(metro);
-			this.boxes.push({
-				box : metro,
-				x : 100,
-				y : 50,
-			});
-
-			const random = new BoxDef.RandomBox();
-			const connection = new EventConnection(metro.getOutputConnectable(0), random.getInputConnectable(0));
-			this.boxes.push({
-				box : random,
-				x : 100,
-				y : 150,
-			});
-			this.connections.push(connection);
-
-			const log = new BoxDef.LogBox();
-			const connection2 = new EventConnection(random.getOutputConnectable(0), log.getInputConnectable(0));
-			this.boxes.push({
-				box : log,
-				x : 200,
-				y : 250,
-			});
-			this.connections.push(connection2);
-
-			const log2 = new BoxDef.LogBox();
-			const connection5 = new EventConnection(random.getOutputConnectable(0), log2.getInputConnectable(0));
-			this.boxes.push({
-				box : log2,
-				x : 300,
-				y : 250,
-			});
-			this.connections.push(connection5);
-
-			const cycle = new BoxDef.CycleSoundBox();
-			const connection3 = new EventConnection(random.getOutputConnectable(0), cycle.getInputConnectable(0));
-			this.boxes.push({
-				box : cycle,
-				x : 100,
-				y : 250,
-			});
-			this.connections.push(connection3);
-
-			const dac = new BoxDef.DacSoundBox();
-			const connection4 = new SoundConnection(cycle.getOutputConnectable(0), dac.getInputConnectable(0));
-			this.boxes.push({
-				box : dac,
-				x : 100,
-				y : 350,
-			});
-			this.connections.push(connection4);
-
+		connectionExist: function(input, output){
+			for(let c in this.connections){
+				if(this.connections[c].getInputConnectable().getId() == input.getId() && this.connections[c].getOutputConnectable().getId() == output.getId()) return true;
+			}
+			return false;
 		},
 		soundOnOff : function(){
 			if(!this.initSound){
 				this.initSound = true;
-				this.initDemo();
 			}
 			this.isSoundOn = !this.isSoundOn;
 			if(this.isSoundOn){
@@ -196,11 +245,11 @@ const app = new Vue({
 		},
 		addBox : function(){
 			let boxName = prompt("Please enter the name of new box", "metro");
-			boxName = boxName.charAt(0).toUpperCase() + boxName.slice(1); // First letter Uppercase
-			boxName = boxName.replace("~", "Sound");
+			boxName = boxName.toLowerCase();
+			boxName = boxName.replace("~", "sound");
 			let proto = null
-			if(typeof BoxDef[boxName + "Box"] != "undefined"){
-				proto = BoxDef[boxName + "Box"];
+			if(typeof BoxDef[boxName + "box"] != "undefined"){
+				proto = BoxDef[boxName + "box"];
 			}
 			if(proto != null){
 				const newBox = new proto();
@@ -217,17 +266,25 @@ const app = new Vue({
 			}else{
 				alert("this box doesn't exist");
 			}
+		},
+		pointerMove : function(event){
+			this.pointerPosition.x = event.srcEvent.clientX;
+			this.pointerPosition.y = event.srcEvent.clientY;
+		},
+		handleTap : function(event){
+			if(event.target.id == "content" && this.temporaryConnectionObj != null) this.temporaryConnectionObj = null;
 		}
 	},
 	template : `
-		<div>
+		<div id="content" v-pan="pointerMove" v-tap="handleTap">
 			` + SvgDefintions + `
 			<div id="menu">
 				<img v-tap="soundOnOff" v-bind:src='[isSoundOn ? "/icons/soundOn.svg" : "/icons/soundOff.svg"]'/>
 				<img v-tap="addBox" src='/icons/addBox.svg'/>
 			</div>
-	 		<box v-for="box in boxes" v-bind:box="box.box" v-bind:x="box.x" v-bind:y="box.y"></box>
-	 		<connection v-for="connection in connections" v-bind:connection="connection"></connection>
+	 		<box v-for="box in boxes" :key="'box-' + box.box.getId()" v-bind:box="box.box" v-bind:x="box.x" v-bind:y="box.y"></box>
+	 		<connection v-for="connection in connections" :key="'connection-' + connection.getId()" v-bind:connection="connection"></connection>
+	 		<temporaryConnection id="temporaryConnection" v-if="temporaryConnectionObj != null" v-bind:x="pointerPosition.x" v-bind:y="pointerPosition.y" v-bind:inputConnectable="temporaryConnectionObj.input" v-bind:outputConnectable="temporaryConnectionObj.output"></temporaryConnection>
 	 	</div>
 	`
 });

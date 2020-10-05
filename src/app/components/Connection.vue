@@ -60,7 +60,7 @@ export default {
 				//End of change order processus
 				if(this.orderNumberChangeProcessing >= Object.keys(this.connection.getInputConnectable().getBox().getOutputConnections()).length){
 
-					this.connection.getInputConnectable().getBox().setOrder(this.connection.getId(), this.temporaryOrder);
+					this.connection.getInputConnectable().getBox().setOrder(this.connection.getId(), this.temporaryOrder - 1);
 
 					this.order = this.temporaryOrder;
 					this.orderChangeProcessing = false;
@@ -79,21 +79,30 @@ export default {
 			}
 			this.updateHot = !this.updateHot;
 		},
-		changeOrder : function(){
-			if(Object.keys(this.connection.getInputConnectable().getBox().getOutputConnections()).length > 1){
-				if(this.orderChangeProcessing && this._order != "?"){
-					return;
-				}
-				const e = new CustomEvent('connection-order-change', { 
-					detail : {
-						inputBoxId : this.connection.getInputConnectable().getBox().getId(),
-						connectionId : this.connection.getId(),
-						order : this.orderNumberChangeProcessing,
-					}
-				});
+		handleTap : function(){
+			if(this.$root.keyRdown){
+				//Remove event for connection updating
+				const e = new CustomEvent('connection-remove', { detail : this.connection});
 
 				// Dispatch the event.
 				document.body.dispatchEvent(e);
+			}else{
+				//change Order
+				if(Object.keys(this.connection.getInputConnectable().getBox().getOutputConnections()).length > 1){
+					if(this.orderChangeProcessing && this._order != "?"){
+						return;
+					}
+					const e = new CustomEvent('connection-order-change', { 
+						detail : {
+							inputBoxId : this.connection.getInputConnectable().getBox().getId(),
+							connectionId : this.connection.getId(),
+							order : this.orderNumberChangeProcessing,
+						}
+					});
+
+					// Dispatch the event.
+					document.body.dispatchEvent(e);
+				}
 			}
 		}
 	},
@@ -146,8 +155,8 @@ export default {
 	},
 	template : `
 	<svg class="connection">
-		<path v-doubletap="hotChange" v-tap="changeOrder" v-bind:d="'M ' + start.x + ' ' + start.y + ' L ' + end.x + ' ' + end.y + ' ' + (end.x + width) + ' ' + end.y + ' ' + (start.x + width) + ' ' + start.y + ' Z'" v-bind:fill="color" v-bind:stroke="hotColor" stroke-width="2"/>
-		<circle v-doubletap="hotChange" v-tap="changeOrder" v-bind:cx="(end.x + start.x) / 2" v-bind:cy="(end.y + start.y) / 2" r="7" stroke="black" stroke-width="1" fill="white" />
-		<text v-doubletap="hotChange" v-tap="changeOrder" class="small" v-bind:x="(end.x + start.x) / 2 - 4" v-bind:y="(end.y + start.y) / 2 + 4" v-html="_order"></text>
+		<path v-doubletap="hotChange" v-tap="handleTap" v-bind:d="'M ' + start.x + ' ' + start.y + ' L ' + end.x + ' ' + end.y + ' ' + (end.x + width) + ' ' + end.y + ' ' + (start.x + width) + ' ' + start.y + ' Z'" v-bind:fill="color" v-bind:stroke="hotColor" stroke-width="2"/>
+		<circle v-doubletap="hotChange" v-tap="handleTap" v-bind:cx="(end.x + start.x) / 2" v-bind:cy="(end.y + start.y) / 2" r="7" stroke="black" stroke-width="1" fill="white" />
+		<text v-doubletap="hotChange" v-tap="handleTap" class="small" v-bind:x="(end.x + start.x) / 2 - 4" v-bind:y="(end.y + start.y) / 2 + 4" v-html="_order"></text>
 	</svg>`,
 }

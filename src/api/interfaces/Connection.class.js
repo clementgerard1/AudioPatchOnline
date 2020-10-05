@@ -27,12 +27,20 @@ class Connection{
 		this.#id = id;
 
 		this.#type = null;
-
 		this.#inputConnectable.getBox().addOutputConnection(this);
 		this.#outputConnectable.getBox().addInputConnection(this);
 
 		this.#processCallbacks = [];
 
+	}
+
+	/**
+		Function which should call before destroy Connection
+	*/
+	destroyLinks(){
+		this.#inputConnectable.getBox().removeOutputConnection(this);
+		this.#outputConnectable.getBox().removeInputConnection(this);
+		this.#processCallbacks = [];
 	}
 
 	/**

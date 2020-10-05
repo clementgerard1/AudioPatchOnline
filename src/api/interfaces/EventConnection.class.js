@@ -30,7 +30,7 @@ class EventConnection extends Connection{
 	*/
 	process(){
 		this.getOutputConnectable().setValue(this.getInputConnectable().getValue());
-		if(this.#hot) this.getOutputConnectable().getBox().process();
+		if(this.#hot) this.getOutputConnectable().getBox().forceProcess();
 		super.process();
 	}
 

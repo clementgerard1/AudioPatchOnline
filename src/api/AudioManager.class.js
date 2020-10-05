@@ -46,7 +46,8 @@ class AudioManager{
 		@static
 	*/
 	static setDestinationVolume(f, time = 0.1){
-		this.volume.gain.linearRampToValueAtTime(f, this.audioContext.currentTime + time);
+		const audioContext = this.getAudioContext();
+		this.volume.gain.linearRampToValueAtTime(f, audioContext.currentTime + time);
 	}
 
 	/**

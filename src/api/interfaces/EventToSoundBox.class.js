@@ -13,7 +13,7 @@ class EventToSoundProcessBox extends Box{
 	*/
 	constructor(){
 
-		super("mixte");
+		super("eventToSound");
 		this.setGraphType("process");
 	}
 	
