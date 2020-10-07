@@ -19,7 +19,7 @@ class MetroBox extends EventInputBox{
 		this.setOutputConnectable(0, "output0");
 
 
-		const time = new ParamConnectable(this);
+		const time = new ParamConnectable("number", this);
 		time.setValue(100);
 		this.addConnectable(time, "time");
 		this.setParamConnectable("time");

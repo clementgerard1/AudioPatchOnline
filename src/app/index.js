@@ -204,7 +204,19 @@ const app = new Vue({
 
 		});
 
+		//Connectable remove event
+		document.body.addEventListener("connectable-remove", (event)=>{
+			const connectable = event.detail;
 
+			for(let c = 0 ; c < this.connections.length ; c++){
+				if(this.connections[c].getOutputConnectable().getId() == connectable.getId()){
+					this.connections[c].destroyLinks();
+					this.connections.splice(c, 1);
+					c--;
+				}
+			}
+
+		});
 
 		//key detector for remove objects
 		document.addEventListener('keydown', (e) => {
@@ -247,6 +259,9 @@ const app = new Vue({
 			let boxName = prompt("Please enter the name of new box", "metro");
 			boxName = boxName.toLowerCase();
 			boxName = boxName.replace("~", "sound");
+			boxName = boxName.replace(/=/gi, "equal");
+			boxName = boxName.replace(/\+/gi, "plus");
+			boxName = boxName.replace(/\*/gi, "mult");
 			let proto = null
 			if(typeof BoxDef[boxName + "box"] != "undefined"){
 				proto = BoxDef[boxName + "box"];

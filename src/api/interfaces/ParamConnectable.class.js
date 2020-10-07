@@ -7,12 +7,14 @@ class ParamConnectable extends Connectable{
 		@class InputConnectable
 		@classdesc InputConnectable represents general input connectable
 		@constructs
+		@param {string} [type=string] type of the box (number, string, toggle, file, list)
 		@param {Box} box
 		@param {number} [id=generated]
 	*/
-	constructor(box, id = GeneralUtils.getId("connectable")){
+	constructor(type, box, id = GeneralUtils.getId("connectable")){
 		
 		super(box, id);
+		this.setType(type);
 
 	}
 

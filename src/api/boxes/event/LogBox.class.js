@@ -12,7 +12,7 @@ class LogBox extends EventOutputBox{
 		this.addConnectable(input, "input0");
 		this.setInputConnectable(0, "input0");
 
-		const name = new ParamConnectable(this);
+		const name = new ParamConnectable("text", this);
 		name.setValue("log");
 		this.addConnectable(name, "name");
 		this.setParamConnectable("name");

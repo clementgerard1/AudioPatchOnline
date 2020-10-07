@@ -5,6 +5,8 @@ class Connectable{
 	#id;
 	#box;
 
+	#type;
+
 	#value; // Value used by connection processing
 
 	#callbacks // Callback called after process
@@ -26,6 +28,8 @@ class Connectable{
 
 		this.#value = null;
 		this.#callbacks = [];
+
+		this.#type = 'any';
 
 	}
 
@@ -59,6 +63,16 @@ class Connectable{
 	}
 
 	/**
+		Set value of connectable manually
+		@param value
+		@return {bool} bool
+	*/
+	setManualValue(value){
+		this.#value = value;
+		return true;
+	}
+
+	/**
 		Get parent Box
 		@returns {Box}
 	*/
@@ -72,6 +86,23 @@ class Connectable{
 	*/
 	addListener(callback){
 		this.#callbacks.push(callback);
+	}
+
+	/**
+		Set the type of the connectable (number, string, toggle, file, list)
+		@param {string} type
+		@return
+	*/
+	setType(type){
+		this.#type = type;
+	}
+
+	/**
+		Get the type of the connectable(number, string, toggle, file, list)
+		@return {string}
+	*/
+	getType(){
+		return this.#type;
 	}
 
 }
