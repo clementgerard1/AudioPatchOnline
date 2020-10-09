@@ -234,6 +234,17 @@ class Box{
 		return this.#inputConnectables[i];
 	}
 
+	/* 
+		Get input connectable index 
+		@param {InputConnectable} connectable
+		@returns {int}
+	*/
+	getInputConnectableIndex(connectable){
+		for(let i in this.#inputConnectables){
+			if(this.#inputConnectables[i].getId() == connectable.getId()) return i;
+		}
+	}
+
 	/**
 		Get input box connectables
 		@return {array} or false if there is an error
@@ -250,6 +261,17 @@ class Box{
 	getOutputConnectable(i){
 		if(typeof this.#outputConnectables[i] == "undefined") return false;
 		return this.#outputConnectables[i];
+	}
+
+	/* 
+		Get output connectable index 
+		@param {OutputConnectable} connectable
+		@returns {int}
+	*/
+	getOutputConnectableIndex(connectable){
+		for(let i in this.#outputConnectables){
+			if(this.#outputConnectables[i].getId() == connectable.getId()) return i;
+		}
 	}
 
 	/**

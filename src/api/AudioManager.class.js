@@ -35,7 +35,17 @@ class AudioManager{
 		@static
 	*/
 	static connect(input, output, i, j){
-		input.connect(output);
+		input.connect(output, i, j);
+		return true;
+	}
+
+	/**
+		Disconnect two nodes
+		@returns {bool} 
+		@static
+	*/
+	static disconnect(input, output, i, j){
+		input.disconnect(output, i, j);
 		return true;
 	}
 

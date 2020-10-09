@@ -21,7 +21,9 @@ class EventToSoundProcessBox extends Box{
 		Process function of the box
 		@param {array} args reprents datas from Process connections
 	*/
-	process(args){}
+	process(args){
+		
+	}
 
 }
 

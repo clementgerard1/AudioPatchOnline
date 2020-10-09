@@ -21,8 +21,13 @@ class SoundConnection extends Connection{
 		this.setType("sound");
 
 		// Web audio graph connection
-		AudioManager.connect(inputConnectable.getValue(), outputConnectable.getValue());
+		AudioManager.connect(inputConnectable.getValue(), outputConnectable.getValue(), this.getInputConnectable().getBox().getOutputConnectableIndex(this.getInputConnectable()), this.getOutputConnectable().getBox().getInputConnectableIndex(this.getOutputConnectable()));
 
+	}
+
+	destroyLinks(){
+		AudioManager.disconnect(this.getInputConnectable().getValue(), this.getOutputConnectable().getValue());
+		super.destroyLinks();
 	}
 
 }
